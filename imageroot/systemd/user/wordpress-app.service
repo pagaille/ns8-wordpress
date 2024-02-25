@@ -1,0 +1,50 @@
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+[Unit]
+Description=Podman  wordpress-app.service
+BindsTo=wordpress.service
+After=wordpress.service mariadb-app.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+EnvironmentFile=-%S/state/smarthost.env
+WorkingDirectory=%S/state
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/mkdir -p config
+ExecStartPre=/bin/rm -f %t/wordpress-app.pid %t/wordpress-app.ctr-id
+ExecStartPre=-runagent discover-smarthost
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/wordpress-app.pid \
+    --cidfile %t/wordpress-app.ctr-id --cgroups=no-conmon \
+    --pod-id-file %t/wordpress.pod-id --replace -d --name  wordpress-app \
+    --volume wordpress-app:/var/www/html/:Z \
+    --env=WORDPRESS_* \
+    --env WORDPRESS_DB_TYPE="mysql" \
+    --env WORDPRESS_DB_HOST=127.0.0.1 \
+    --env WORDPRESS_DB_PORT=3306 \
+    --env WORDPRESS_DB_USER="wordpress" \
+    --env WORDPRESS_DB_PASSWORD="wordpress" \
+    --env WORDPRESS_DB_NAME="wordpress" \
+    --env WORDPRESS_DB_CHARSET="utf8" \
+    --env WORDPRESS_AUTH_KEY="${SECRET}" \
+    --env WORDPRESS_SECURE_AUTH_KEY="${SECRET}" \
+    --env WORDPRESS_LOGGED_IN_KEY="${SECRET}" \
+    --env WORDPRESS_NONCE_KEY="${SECRET}" \
+    --env WORDPRESS_AUTH_SALT="${SECRET}" \
+    --env WORDPRESS_SECURE_AUTH_SALT="${SECRET}" \
+    --env WORDPRESS_LOGGED_IN_SALT="${SECRET}" \
+    --env WORDPRESS_NONCE_SALT="${SECRET}" \
+    ${WORDPRESS_IMAGE}
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/wordpress-app.ctr-id -t 10
+ExecReload=/usr/bin/podman kill -s HUP wordpress-app
+SyslogIdentifier=%u
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/wordpress-app.ctr-id
+PIDFile=%t/wordpress-app.pid
+Type=forking
+
+[Install]
+WantedBy=default.target
