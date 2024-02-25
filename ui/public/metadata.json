@@ -3,7 +3,7 @@
   "description": {
     "en": "Wordpress is a tool to publish websites and blogs"
   },
-  "categories": ["CMS"],
+  "categories": ["web"],
   "authors": [
     {
       "name": "Stephane de Labrusse",
