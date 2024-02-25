@@ -1,0 +1,42 @@
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+[Unit]
+Description=Podman  wordpress-app.service
+BindsTo=wordpress.service
+After=wordpress.service mariadb-app.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+EnvironmentFile=-%S/state/smarthost.env
+WorkingDirectory=%S/state
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/mkdir -p config
+ExecStartPre=/bin/rm -f %t/wordpress-app.pid %t/wordpress-app.ctr-id
+ExecStartPre=-runagent discover-smarthost
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/wordpress-app.pid \
+    --cidfile %t/wordpress-app.ctr-id --cgroups=no-conmon \
+    --pod-id-file %t/wordpress.pod-id --replace -d --name  wordpress-app \
+    --volume wordpress-app:/var/www/html/:Z \
+    --volume ./tmp:/tmp:Z \
+    --env=MARIADB_* \
+    --env MARIADB_DB_TYPE=mysql \
+    --env MARIADB_DB_HOST=127.0.0.1 \
+    --env MARIADB_DB_PORT=3306 \
+    --env MARIADB_DB_USER=wordpress \
+    --env MARIADB_DB_PASSWORD=wordpress \
+    --env MARIADB_DB_NAME=wordpress \
+    ${NGINX_IMAGE}
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/wordpress-app.ctr-id -t 10
+ExecReload=/usr/bin/podman kill -s HUP wordpress-app
+SyslogIdentifier=%u
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/wordpress-app.ctr-id
+PIDFile=%t/wordpress-app.pid
+Type=forking
+
+[Install]
+WantedBy=default.target
