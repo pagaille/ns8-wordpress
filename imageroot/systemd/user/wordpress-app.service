@@ -22,15 +22,23 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/wordpress-app.pid \
     --cidfile %t/wordpress-app.ctr-id --cgroups=no-conmon \
     --pod-id-file %t/wordpress.pod-id --replace -d --name  wordpress-app \
     --volume wordpress-app:/var/www/html/:Z \
-    --volume ./tmp:/tmp:Z \
-    --env=MARIADB_* \
-    --env MARIADB_DB_TYPE=mysql \
-    --env MARIADB_DB_HOST=127.0.0.1 \
-    --env MARIADB_DB_PORT=3306 \
-    --env MARIADB_DB_USER=wordpress \
-    --env MARIADB_DB_PASSWORD=wordpress \
-    --env MARIADB_DB_NAME=wordpress \
-    ${NGINX_IMAGE}
+    --env=WORDPRESS_* \
+    --env WORDPRESS_DB_TYPE="mysql" \
+    --env WORDPRESS_DB_HOST=127.0.0.1 \
+    --env WORDPRESS_DB_PORT=3306 \
+    --env WORDPRESS_DB_USER="wordpress" \
+    --env WORDPRESS_DB_PASSWORD="wordpress" \
+    --env WORDPRESS_DB_NAME="wordpress" \
+    --env WORDPRESS_DB_CHARSET="utf8" \
+    --env WORDPRESS_AUTH_KEY="${SECRET}" \
+    --env WORDPRESS_SECURE_AUTH_KEY="${SECRET}" \
+    --env WORDPRESS_LOGGED_IN_KEY="${SECRET}" \
+    --env WORDPRESS_NONCE_KEY="${SECRET}" \
+    --env WORDPRESS_AUTH_SALT="${SECRET}" \
+    --env WORDPRESS_SECURE_AUTH_SALT="${SECRET}" \
+    --env WORDPRESS_LOGGED_IN_SALT="${SECRET}" \
+    --env WORDPRESS_NONCE_SALT="${SECRET}" \
+    ${WORDPRESS_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/wordpress-app.ctr-id -t 10
 ExecReload=/usr/bin/podman kill -s HUP wordpress-app
 SyslogIdentifier=%u
