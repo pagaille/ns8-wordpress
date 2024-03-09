@@ -22,7 +22,7 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/wordpress-app.pid \
     --cidfile %t/wordpress-app.ctr-id --cgroups=no-conmon \
     --pod-id-file %t/wordpress.pod-id --replace -d --name  wordpress-app \
     --volume wordpress-app:/var/www/html/:Z \
-    --volume ./config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini \
+    --volume ./config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:Z \
     --env=WORDPRESS_* \
     --env WORDPRESS_DB_TYPE="mysql" \
     --env WORDPRESS_DB_HOST=127.0.0.1 \
