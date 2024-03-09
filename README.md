@@ -1,33 +1,20 @@
 # ns8-wordpress
 
-This is a template module for [NethServer 8](https://github.com/NethServer/ns8-core).
-To start a new module from it:
+Ns8-wordpers ease your life to install wordpress, the most known blog tool system
 
-1. Click on [Use this template](https://github.com/NethServer/ns8-wordpress/generate).
-   Name your repo with `ns8-` prefix (e.g. `ns8-mymodule`). 
-   Do not end your module name with a number, like ~~`ns8-baaad2`~~!
+## Custom php
 
-1. Clone the repository, enter the cloned directory and
-   [configure your GIT identity](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup#_your_identity)
+To modify php settings go to /home/wordpress1/.config/state/config/uploads.ini and adjust your settings, your modifications are included inside the backup
 
-1. Rename some references inside the repo:
-   ```
-   modulename=$(basename $(pwd) | sed 's/^ns8-//') &&
-   git mv imageroot/systemd/user/wordpress.service imageroot/systemd/user/${modulename}.service &&
-   git mv imageroot/systemd/user/wordpress-app.service imageroot/systemd/user/${modulename}-app.service && 
-   git mv tests/wordpress.robot tests/${modulename}.robot &&
-   sed -i "s/wordpress/${modulename}/g" $(find .github/ * -type f) &&
-   git commit -a -m "Repository initialization"
-   ```
 
-1. Edit this `README.md` file, by replacing this section with your module
-   description
-
-1. Adjust `.github/workflows` to your needs. `clean-registry.yml` might
-   need the proper list of image names to work correctly. Unused workflows
-   can be disabled from the GitHub Actions interface.
-
-1. Commit and push your local changes
+```
+memory_limit=512M
+upload_max_filesize=256M
+post_max_size =256M
+max_execution_time=600
+max_input_time=600
+max_file_uploads=50
+```
 
 ## Install
 
