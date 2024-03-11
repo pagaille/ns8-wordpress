@@ -12,12 +12,26 @@ set -e
 images=()
 # The image will be pushed to GitHub container registry
 repobase="${REPOBASE:-ghcr.io/nethserver}"
+wordpress_version="6.4.3-php8.3-apache"
+#Create webtop-webapp container
+reponame="wordpress-app"
+container=$(buildah from docker.io/wordpress:${wordpress_version})
+buildah run "${container}" /bin/sh <<'EOF'
+set -e
+docker-php-ext-install pdo_mysql
+EOF
+# Commit the image
+buildah commit --rm "${container}" "${repobase}/${reponame}"
+
+# Append the image URL to the images array
+images+=("${repobase}/${reponame}")
+
+
 # Configure the image name
 reponame="wordpress"
 
 # Create a new empty container image
 container=$(buildah from scratch)
-
 # Reuse existing nodebuilder-wordpress container, to speed up builds
 if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-wordpress; then
     echo "Pulling NodeJS runtime..."
@@ -45,7 +59,7 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@node:routeadm" \
     --label="org.nethserver.tcp-ports-demand=3" \
     --label="org.nethserver.rootfull=0" \
-    --label="org.nethserver.images=docker.io/mariadb:10.11.5 docker.io/wordpress:6.4.3-php8.3-apache" \
+    --label="org.nethserver.images=docker.io/mariadb:10.11.5 ${repobase}/wordpress-app:${IMAGETAG:-latest}" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"
