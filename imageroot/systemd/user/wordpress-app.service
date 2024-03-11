@@ -39,7 +39,7 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/wordpress-app.pid \
     --env WORDPRESS_SECURE_AUTH_SALT="${SECRET}" \
     --env WORDPRESS_LOGGED_IN_SALT="${SECRET}" \
     --env WORDPRESS_NONCE_SALT="${SECRET}" \
-    ${WORDPRESS_IMAGE}
+    ${WORDPRESS_APP_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/wordpress-app.ctr-id -t 10
 ExecReload=/usr/bin/podman kill -s HUP wordpress-app
 SyslogIdentifier=%u
