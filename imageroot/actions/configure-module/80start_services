@@ -13,4 +13,5 @@ exec 1>&2
 
 touch smarthost.env
 
-systemctl --user enable --now wordpress.service
+systemctl --user enable  wordpress.service
+systemctl --user restart wordpress.service
