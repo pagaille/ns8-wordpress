@@ -29,7 +29,7 @@ Output example:
 
 ## Configure
 
-Let's assume that the mattermost instance is named `wordpress1`.
+Let's assume that the wordpress instance is named `wordpress1`.
 
 Launch `configure-module`, by setting the following parameters:
 - `host`: a fully qualified domain name for the application
