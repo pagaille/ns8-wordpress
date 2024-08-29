@@ -1,6 +1,25 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "local>NethServer/.github:renovate-config"
+  "extends": ["config:base"],
+  "ignorePaths": ["**/ui/**", "**/.devcontainer/**"],
+  "regexManagers": [
+    {
+      "fileMatch": ["build-images.sh"],
+      "matchStrings": ["docker\\.io/wordpress:(?<currentValue>[-0-9\\.a-z]+)"],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "wordpress"
+    },
+    {
+      "fileMatch": ["build-images.sh"],
+      "matchStrings": ["docker\\.io/mariadb:(?<currentValue>[-0-9\\.a-z]+)"],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "mariadb"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["mariadb"],
+      "allowedVersions": "<= 10.11"
+    }
   ]
 }
