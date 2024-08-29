@@ -12,10 +12,10 @@ set -e
 images=()
 # The image will be pushed to GitHub container registry
 repobase="${REPOBASE:-ghcr.io/nethserver}"
-wordpress_version="6.4.3-php8.3-apache"
+
 #Create webtop-webapp container
 reponame="wordpress-app"
-container=$(buildah from docker.io/wordpress:${wordpress_version})
+container=$(buildah from docker.io/wordpress:6.4.3-php8.3-apache)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 docker-php-ext-install pdo_mysql
