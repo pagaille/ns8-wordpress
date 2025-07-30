@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 4.1.2 (Python 3.8.10 on linux)" generated="20250730 16:56:53.088" rpa="false" schemaversion="2">
+<suite id="s1" name="Tests" source="/home/pwuser/ns8-module/tests">
+<kw name="Connect to the node" type="SETUP">
+<kw name="Open Connection" library="SSHLibrary">
+<arg>${NODE_ADDR}</arg>
+<doc>Opens a new SSH connection to the given ``host`` and ``port``.</doc>
+<status status="PASS" starttime="20250730 16:56:53.142" endtime="20250730 16:56:53.142"/>
+</kw>
+<kw name="Login With Public Key" library="SSHLibrary">
+<arg>root</arg>
+<arg>${SSH_KEYFILE}</arg>
+<doc>Logs into the SSH server using key-based authentication.</doc>
+<msg timestamp="20250730 16:56:53.142" level="INFO">Logging into ':22' as 'root'.</msg>
+<msg timestamp="20250730 16:56:53.144" level="FAIL">gaierror: [Errno -2] Name or service not known</msg>
+<status status="FAIL" starttime="20250730 16:56:53.142" endtime="20250730 16:56:53.144"/>
+</kw>
+<kw name="Execute Command" library="SSHLibrary">
+<var>${output}</var>
+<arg>systemctl is-system-running</arg>
+<arg>--wait</arg>
+<doc>Executes ``command`` on the remote machine and returns its outputs.</doc>
+<status status="NOT RUN" starttime="20250730 16:56:53.144" endtime="20250730 16:56:53.145"/>
+</kw>
+<kw name="Should Be True" library="BuiltIn">
+<arg>'${output}' == 'running' or '${output}' == 'degraded'</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="NOT RUN" starttime="20250730 16:56:53.145" endtime="20250730 16:56:53.145"/>
+</kw>
+<status status="FAIL" starttime="20250730 16:56:53.142" endtime="20250730 16:56:53.145"/>
+</kw>
+<suite id="s1-s1" name="Wordpress" source="/home/pwuser/ns8-module/tests/wordpress.robot">
+<test id="s1-s1-t1" name="Check if wordpress is installed correctly">
+<status status="FAIL" starttime="20250730 16:56:53.145" endtime="20250730 16:56:53.146">Parent suite setup failed:
+gaierror: [Errno -2] Name or service not known</status>
+</test>
+<test id="s1-s1-t2" name="Check if wordpress can be configured">
+<status status="FAIL" starttime="20250730 16:56:53.146" endtime="20250730 16:56:53.146">Parent suite setup failed:
+gaierror: [Errno -2] Name or service not known</status>
+</test>
+<test id="s1-s1-t3" name="Check postgresql path is configured">
+<status status="FAIL" starttime="20250730 16:56:53.146" endtime="20250730 16:56:53.146">Parent suite setup failed:
+gaierror: [Errno -2] Name or service not known</status>
+</test>
+<test id="s1-s1-t4" name="Check if wordpress works as expected">
+<status status="FAIL" starttime="20250730 16:56:53.146" endtime="20250730 16:56:53.147">Parent suite setup failed:
+gaierror: [Errno -2] Name or service not known</status>
+</test>
+<test id="s1-s1-t5" name="Check if wordpress is removed correctly">
+<status status="FAIL" starttime="20250730 16:56:53.147" endtime="20250730 16:56:53.147">Parent suite setup failed:
+gaierror: [Errno -2] Name or service not known</status>
+</test>
+<status status="FAIL" starttime="20250730 16:56:53.145" endtime="20250730 16:56:53.147">Parent suite setup failed:
+gaierror: [Errno -2] Name or service not known</status>
+</suite>
+<status status="FAIL" starttime="20250730 16:56:53.088" endtime="20250730 16:56:53.148">Suite setup failed:
+gaierror: [Errno -2] Name or service not known</status>
+</suite>
+<statistics>
+<total>
+<stat pass="0" fail="5" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat pass="0" fail="5" skip="0" id="s1" name="Tests">Tests</stat>
+<stat pass="0" fail="5" skip="0" id="s1-s1" name="Wordpress">Tests.Wordpress</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

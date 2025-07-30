@@ -13,12 +13,14 @@ images=()
 # The image will be pushed to GitHub container registry
 repobase="${REPOBASE:-ghcr.io/nethserver}"
 
-#Create webtop-webapp container
+#Create wordpress-app container
 reponame="wordpress-app"
 container=$(buildah from docker.io/wordpress:6.8.0-php8.3-apache)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 docker-php-ext-install pdo_mysql
+docker-php-ext-install calendar
+
 EOF
 # Commit the image
 buildah commit --rm "${container}" "${repobase}/${reponame}"
@@ -86,6 +88,6 @@ if [[ -n "${CI}" ]]; then
 else
     # Just print info for manual push
     printf "Publish the images with:\n\n"
-    for image in "${images[@],,}"; do printf "  buildah push %s docker://%s:%s\n" "${image}" "${image}" "${IMAGETAG:-latest}" ; done
+#    for image in "${images[@],,}"; do printf "  buildah push %s docker://%s:%s\n" "${image}" "${image}" "${IMAGETAG:-latest}" ; done
     printf "\n"
 fi
