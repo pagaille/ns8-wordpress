@@ -6,18 +6,17 @@
 #
 
 # Terminate on error
-set -e
+set -ex
 
 # Prepare variables for later use
 images=()
 # The image will be pushed to GitHub container registry
-repobase="${REPOBASE:-ghcr.io/nethserver}"
+repobase="${REPOBASE:-ghcr.io/pagaille}"
 
-#Create wordpress-app container
-reponame="wordpress-app"
-container=$(buildah from docker.io/wordpress:6.8.0-php8.3-apache)
+#Create webt-op-webapp container
+reponame="ns8-ordpress672-app-pagaille"
+container=$(buildah from docker.io/wordpress:6.7.2-php8.0-apache)
 buildah run "${container}" /bin/sh <<'EOF'
-set -e
 docker-php-ext-install pdo_mysql
 docker-php-ext-install calendar
 
@@ -50,6 +49,7 @@ buildah run \
 # Add imageroot directory to the container image
 buildah add "${container}" imageroot /imageroot
 buildah add "${container}" ui/dist /ui
+
 # Setup the entrypoint, ask to reserve one TCP port with the label and set a rootless container
 # Select you image(s) with the label org.nethserver.images
 # ghcr.io/xxxxx is the GitHub container registry or your own registry or docker.io for Docker Hub
@@ -63,6 +63,7 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.rootfull=0" \
     --label="org.nethserver.images=docker.io/mariadb:10.11.11 ${repobase}/wordpress-app:${IMAGETAG:-latest}" \
     "${container}"
+
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"
 
@@ -82,12 +83,13 @@ images+=("${repobase}/${reponame}")
 #
 # Setup CI when pushing to Github. 
 # Warning! docker::// protocol expects lowercase letters (,,)
+
 if [[ -n "${CI}" ]]; then
     # Set output value for Github Actions
     printf "images=%s\n" "${images[*],,}" >> "${GITHUB_OUTPUT}"
 else
     # Just print info for manual push
     printf "Publish the images with:\n\n"
-#    for image in "${images[@],,}"; do printf "  buildah push %s docker://%s:%s\n" "${image}" "${image}" "${IMAGETAG:-latest}" ; done
+    for image in "${images[@],,}"; do printf "  buildah push %s docker://%s:%s\n" "${image}" "${image}" "${IMAGETAG:-latest}" ; done
     printf "\n"
 fi
